@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Simple Counter</string>
+    <string name="action_settings">Settings</string>
+    <string name="initial_counter">0</string>
+    <string name="action_edit">Edit counter value</string>
+    <string name="edit_box_title">Enter a value for counter</string>
+    <string name="increment">+</string>
+    <string name="decrement">-</string>
+    <string name="message_reset">Counter reset</string>
+    <string name="counter_clipboard">Counter value copied to clipboard</string>
+</resources>
