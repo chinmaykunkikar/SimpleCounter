@@ -1,1 +1,1 @@
-include ':app', ':SimpleCounterTwo'
+include ':app'

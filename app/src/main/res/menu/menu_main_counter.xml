@@ -2,16 +2,27 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="chinmay.simplecounter.MainCounter">
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
 
     <item
         android:id="@+id/action_edit"
         android:icon="@drawable/ic_counter_edit"
-        android:orderInCategory="200"
+        android:orderInCategory="100"
         android:title="@string/action_edit"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_increment"
+        android:icon="@drawable/ic_counter_incrementation"
+        android:orderInCategory="200"
+        android:title="@string/action_increment"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_limit"
+        android:orderInCategory="300"
+        android:title="@string/set_limit"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="400"
+        android:title="@string/action_settings"
+        app:showAsAction="never" />
 </menu>

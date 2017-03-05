@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/counterInc_relativeLayout_padding">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:labelFor="@+id/counter_edit_text"
+        android:text="@string/set_limit"
+        android:textSize="@dimen/counterInc_textView_textSize" />
+
+    <EditText
+        android:id="@+id/counter_edit_limit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/counterInc_editText_marginTop"
+        android:inputType="number|numberSigned"
+        android:textSize="@dimen/counterInc_editText_textSize" />
+</RelativeLayout>

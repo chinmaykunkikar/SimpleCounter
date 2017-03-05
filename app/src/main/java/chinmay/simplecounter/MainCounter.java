@@ -1,10 +1,13 @@
 package chinmay.simplecounter;
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
+import android.os.Vibrator;
+import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -18,48 +21,87 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
-
 
 public class MainCounter extends AppCompatActivity {
 
-    int counter;
-    TextView counterView;
-    Button increment;
-    Button decrement;
-    private ClipboardManager clipboardManager;
-    private ClipData clipData;
+    private static final int INITIAL_COUNTER = 0;
+    private static final String INCREMENT_BUTTON = "+";
+    private static final String DECREMENT_BUTTON = "-";
+    private static int INCREMENT_VALUE = 1;
+    private int counter;
+    private int temp;
+    private TextView counterView;
+    private Button masterButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //requestWindowFeature(Window.FEATURE_NO_TITLE);
+        //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_counter);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // Intro Activity
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                SharedPreferences getPrefs = PreferenceManager
+                        .getDefaultSharedPreferences(getBaseContext());
+
+                boolean isFirstStart = getPrefs.getBoolean("firstStart", true);
+
+                if (isFirstStart) {
+                    Intent i = new Intent(MainCounter.this, IntroActivity.class);
+                    startActivity(i);
+
+                    SharedPreferences.Editor e = getPrefs.edit();
+                    e.putBoolean("firstStart", false);
+                    e.apply();
+                }
+            }
+        });
+        t.start();
+
         // Declarations
-        counter = 0;
+        counter = INITIAL_COUNTER;
         counterView = (TextView) findViewById(R.id.main_counter);
-        increment = (Button) findViewById(R.id.increment);
-        decrement = (Button) findViewById(R.id.decrement);
-        final FloatingActionButton reset_fab = (FloatingActionButton) findViewById(R.id.reset_fab);
-        clipboardManager = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
+        masterButton = (Button) findViewById(R.id.master_button);
+
+        // Custom Typeface
+        Typeface robotoLight = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Light.ttf");
+        counterView.setTypeface(robotoLight);
+        masterButton.setTypeface(robotoLight);
+
+        // Set Master Button Text
+        masterButton.setText(INCREMENT_BUTTON);
 
         sanityCheck();
-        // onClickListeners
-        increment.setOnClickListener(new View.OnClickListener() {
+
+        // Click Listeners
+        masterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                counter++;
-                counterView.setText(String.valueOf(counter));
-                sanityCheck();
+                if (masterButton.getText().toString().equals(INCREMENT_BUTTON)) {
+                    masterButton.setText(DECREMENT_BUTTON);
+                } else if (masterButton.getText().toString().equals(DECREMENT_BUTTON)) {
+                    masterButton.setText(INCREMENT_BUTTON);
+                } else {
+                    masterButton.setText(INCREMENT_BUTTON);
+                }
             }
         });
 
-        decrement.setOnClickListener(new View.OnClickListener() {
+        counterView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                counter--;
+                if (masterButton.getText().toString().equals(INCREMENT_BUTTON)) {
+                    counter = counter + INCREMENT_VALUE;
+                } else if (masterButton.getText().toString().equals(DECREMENT_BUTTON)) {
+                    counter = counter - INCREMENT_VALUE;
+                }
+                Vibrator counterClick = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                counterClick.vibrate(25);
                 counterView.setText(String.valueOf(counter));
                 sanityCheck();
             }
@@ -68,33 +110,24 @@ public class MainCounter extends AppCompatActivity {
         counterView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                clipData = ClipData.newPlainText("text", "The counter result is " + counterView.getText().toString());
-                clipboardManager.setPrimaryClip(clipData);
-                Toast.makeText(getApplicationContext(), R.string.counter_clipboard, Toast.LENGTH_SHORT).show();
-                return false;
-            }
-        });
-
-
-        assert reset_fab != null;
-        reset_fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                counter = 0;
+                temp = counter;
+                counter = INITIAL_COUNTER;
                 counterView.setText(String.valueOf(counter));
                 sanityCheck();
-                Snackbar snackbar = Snackbar.make(reset_fab, R.string.message_reset, Snackbar.LENGTH_LONG);
-                snackbar.setAction(null, new View.OnClickListener() {
+                Snackbar snackbar = Snackbar.make(counterView, R.string.message_reset, Snackbar.LENGTH_LONG);
+                snackbar.setAction(R.string.message_undo, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        //TODO Undo action here
+                        counter=temp;
+                        counterView.setText(String.valueOf(counter));
+                        sanityCheck();
                     }
                 });
                 snackbar.show();
+                return true;
             }
         });
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -108,22 +141,31 @@ public class MainCounter extends AppCompatActivity {
 
         switch (id) {
             case R.id.action_settings:
+                Intent prefs = new Intent(this, Prefs.class);
+                startActivity(prefs);
                 return true;
             case R.id.action_edit:
                 showEditDialog();
+                break;
+            case R.id.action_increment:
+                showIncrementDialog();
+                break;
+            case R.id.action_limit:
+                //showLimitDialog();
             default:
                 return true;
         }
+        return true;
     }
 
-    public void showEditDialog() {
+    private void showEditDialog() {
         LayoutInflater layoutInflater = LayoutInflater.from(this);
         View editCounter = layoutInflater.inflate(R.layout.counter_edit, null);
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder.setView(editCounter);
         final EditText counterInput = (EditText) editCounter.findViewById(R.id.counter_edit_text);
-        counterInput.setInputType(InputType.TYPE_CLASS_NUMBER);
+        counterInput.setInputType(InputType.TYPE_NUMBER_FLAG_SIGNED | InputType.TYPE_CLASS_NUMBER);
         counterInput.setText(counterView.getText().toString());
         counterInput.setSelectAllOnFocus(true);
         counterInput.requestFocus();
@@ -135,8 +177,10 @@ public class MainCounter extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int which) {
                                 if (counterInput.getText().toString().trim().equals("")) {
                                     return;
-                                } else {
+                                } else if (counterInput.getText().toString().matches("^[-0-9]*$")) {
                                     counter = Integer.parseInt(counterInput.getText().toString());
+                                } else {
+                                    return;
                                 }
                                 counterView.setText(String.valueOf(counter));
                                 sanityCheck();
@@ -154,12 +198,45 @@ public class MainCounter extends AppCompatActivity {
         alertDialog.show();
     }
 
-    public void sanityCheck() {
-        if (counter <= 0) {
-            decrement.setEnabled(false);
-        } else if (counter > 0) {
-            decrement.setEnabled(true);
-        }
+    private void showIncrementDialog() {
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        View editCounter = layoutInflater.inflate(R.layout.counter_increment, null);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setView(editCounter);
+        final EditText counterInput = (EditText) editCounter.findViewById(R.id.counter_edit_text);
+        counterInput.setInputType(InputType.TYPE_NUMBER_FLAG_SIGNED | InputType.TYPE_CLASS_NUMBER);
+        counterInput.setText(String.valueOf(INCREMENT_VALUE));
+        counterInput.setSelectAllOnFocus(true);
+        counterInput.requestFocus();
+        alertDialogBuilder
+                .setCancelable(true)
+                .setPositiveButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (counterInput.getText().toString().trim().equals("")) {
+                                    return;
+                                } else if (counterInput.getText().toString().matches("^[0-9]*$")) {
+                                    INCREMENT_VALUE = Integer.parseInt(counterInput.getText().toString());
+                                } else {
+                                    return;
+                                }
+                            }
+                        })
+                .setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        alertDialog.show();
+    }
+    
+    private void sanityCheck() {
+
         if (counter > 99) {
             counterView.setTextSize(196);
         }
@@ -169,5 +246,23 @@ public class MainCounter extends AppCompatActivity {
         if (counter > 999) {
             counterView.setTextSize(146);
         }
+        if (counter < -9) {
+            counterView.setTextSize(196);
+        }
+        if (counter < -99) {
+            counterView.setTextSize(146);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("counter", counter);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        counter = savedInstanceState.getInt("counter");
     }
 }

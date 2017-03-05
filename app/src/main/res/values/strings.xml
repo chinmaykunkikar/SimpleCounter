@@ -1,11 +1,49 @@
 <resources>
     <string name="app_name">Simple Counter</string>
+
     <string name="action_settings">Settings</string>
-    <string name="initial_counter">0</string>
     <string name="action_edit">Edit counter value</string>
+    <string name="action_increment">Set incrementation</string>
+
+    <string name="ui_category">UI Components</string>
+    <string name="ui_vibrator">Counter Vibrator</string>
+    <string name="ui_vibrator_summaryOn">Vibrator is currently on</string>
+    <string name="ui_vibrator_summaryOff">Vibrator is currently off</string>
+
+    <string name="misc_category">Misc. settings</string>
+    <string name="action_showIntro">Start intro activity</string>
+    <string name="action_showIntro_summary">Show the intro activity slides</string>
+    <string name="about_category">@string/app_name</string>
+    <string name="about_pref">About</string>
+    <string name="about_pref_summary">A counter developed to be minimal, simple and
+        lightweight, as it should be.</string>
+    <string name="about_developer_title">Developer</string>
+    <string name="about_developer">Chinmay Kunkikar</string>
+    <string name="app_version_title">Version</string>
+    <string name="app_version">seventeen</string>
+    <string name="made_with">Made with \u2764 in India.</string>
+
+    <string name="initial_counter">0</string>
+
     <string name="edit_box_title">Enter a value for counter</string>
-    <string name="increment">+</string>
-    <string name="decrement">-</string>
     <string name="message_reset">Counter reset</string>
-    <string name="counter_clipboard">Counter value copied to clipboard</string>
+    <string name="message_undo">UNDO</string>
+
+    <string name="set_increment">Set counter incrementation</string>
+
+    <string name="set_limit">Set counter limit</string>
+
+    <string name="limit_reached">Counter limit reached</string>
+
+    <!--Intro Strings-->
+    <string name="intro_title_1">@string/app_name</string>
+    <string name="intro_desc_1">A lovable minimalistic counter</string>
+    <string name="intro_title_2">Master Button</string>
+    <string name="intro_desc_2">Control actions using the Master Button</string>
+    <string name="intro_title_3">Dynamic</string>
+    <string name="intro_desc_3">Start wherever you want</string>
+    <string name="intro_title_4">And more</string>
+    <string name="intro_desc_4">Increment however you want</string>
+
+    <string name="null_string" />
 </resources>

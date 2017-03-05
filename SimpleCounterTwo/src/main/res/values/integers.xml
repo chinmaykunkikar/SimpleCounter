@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!-- Counter sanity checks -->
-    <integer name="counter_g_99">196</integer>
-    <integer name="counter_l_100">240</integer>
-    <integer name="counter_g_999">146</integer>
-    <integer name="counter_l_m9">196</integer>
-    <integer name="counter_l_m99">146</integer>
-</resources>
